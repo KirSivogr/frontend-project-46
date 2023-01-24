@@ -1,14 +1,9 @@
 import genDiff from "../src/parser.js";
 import { expect, test } from '@jest/globals';
+import fs from "fs";
+import path from "path";
 
 test('gendiff', () => {
-    const res = '{\n' +
-        ' - follow: false\n' +
-        '   host: hexlet.io\n' +
-        ' - proxy: 123.234.53.22\n' +
-        ' - timeout: 50\n' +
-        ' + timeout: 20\n' +
-        ' + verbose: true\n' +
-        '}';
+    const res = fs.readFileSync(path.resolve(process.cwd(), '__fixtures__', 'res.txt'), "utf-8");
     expect(genDiff('file1.json', 'file2.json')).toEqual(res);
 });
