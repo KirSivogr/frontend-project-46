@@ -35,12 +35,11 @@ export default function compare(obj1, obj2) {
           value: obj1[item],
         };
       }
-
-      return {
-        sign: 'not same',
-        key: item,
-        value: [obj1[item], obj2[item]],
-      };
     }
+    return {
+      sign: 'not same',
+      key: item,
+      value: [obj1[item], obj2[item]],
+    };
   });
 }

@@ -32,9 +32,7 @@ export default function makeStylish(obj1, obj2) {
     if (sign === 'same') {
       return `${spaces(depth)}  ${key}: ${stringify(value, depth)}`;
     }
-    if (sign === 'not same') {
-      return `${spaces(depth)}- ${key}: ${stringify(value[0], depth)}\n${spaces(depth)}+ ${key}: ${stringify(value[1], depth)}`;
-    }
+    return `${spaces(depth)}- ${key}: ${stringify(value[0], depth)}\n${spaces(depth)}+ ${key}: ${stringify(value[1], depth)}`;
   }).join('\n');
   return `{\n${iter(resultOfCompare, 0)}\n}`;
 }

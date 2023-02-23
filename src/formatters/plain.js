@@ -22,11 +22,14 @@ const stringify = (obj, string) => {
       if (sign === 'not same') {
         return `.${key}' was updated. From ${inType(value[0])} to ${inType(value[1])}`;
       }
-      if (sign === 'o') {
-        return `.${key}${iter(value, `${string1}.${key}`)}`;
-      }
+      return `.${key}${iter(value, `${string1}.${key}`)}`;
     }
-    return `${obj1.map((item) => { if (item.sign !== 'same') return `${iter(item, string1)}`; })
+    return `${obj1.map((item) => {
+      if (item.sign !== 'same') {
+        return `${iter(item, string1)}`;
+      }
+      return '';
+    })
       .filter(Boolean)
       .join(`\nProperty '${string1}`)}`;
   };
@@ -36,19 +39,20 @@ const stringify = (obj, string) => {
 export default function makePlain(obj1, obj2) {
   const resultOfCompare = compare(obj1, obj2);
   const iter = (item) => item.map((obj) => {
-    const { sign, key, value } = obj;
-    if (sign === 'o') {
-      return `Property '${key}${stringify(value, key)}`;
-    }
-    if (sign === '+') {
-      return `Property '${key}' was added with value: ${inType(value)}`;
-    }
-    if (sign === '-') {
-      return `Property '${key}' was removed`;
-    }
-    if (sign === 'not same') {
+    if (item.sign !== 'same') {
+      const { sign, key, value } = obj;
+      if (sign === 'o') {
+        return `Property '${key}${stringify(value, key)}`;
+      }
+      if (sign === '+') {
+        return `Property '${key}' was added with value: ${inType(value)}`;
+      }
+      if (sign === '-') {
+        return `Property '${key}' was removed`;
+      }
       return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'`;
     }
+    return '';
   }).join('\n');
-  return iter(resultOfCompare, '').slice(0, -1);
+  return iter(resultOfCompare, '').filter(Boolean).slice(0, -1);
 }
