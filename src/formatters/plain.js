@@ -52,5 +52,5 @@ export default function makePlain (obj1, obj2) {
             }
         }).join('\n');
     }
-    return iter(resultOfCompare, '');
+    return iter(resultOfCompare, '').slice(0, -1);
 }
