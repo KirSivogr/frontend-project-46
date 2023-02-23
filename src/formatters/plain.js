@@ -19,7 +19,7 @@ const stringify = (ind, key, data) => {
   return 0;
 };
 
-const compInPlain = (obj1, obj2) => {
+const makePlain = (obj1, obj2) => {
   const mass = compare(obj1, obj2);
   const iter = (value, path) => value.filter((n) => n.ind !== 'same').map((item) => {
     const { ind, key, data } = item;
