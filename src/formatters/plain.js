@@ -39,18 +39,18 @@ export default function makePlain (obj1, obj2) {
         return item.map((obj) => {
             const {sign, key, value} = obj;
             if (sign === 'o') {
-                return `Property '${key}${stringify(value, key)}`;
+                return `Property '${key}${stringify(value, key)}\n`;
             }
             if (sign === '+') {
-                return `Property '${key}' was added with value: ${inType(value)}`;
+                return `Property '${key}' was added with value: ${inType(value)}\n`;
             }
             if (sign === '-') {
-                return `Property '${key}' was removed`;
+                return `Property '${key}' was removed\n`;
             }
             if (sign === 'not same') {
-                return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'`;
+                return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'\n`;
             }
-        }).join('\n');
+        }).join('');
     }
     return iter(resultOfCompare);
 }
