@@ -39,7 +39,6 @@ const stringify = (obj, string) => {
 export default function makePlain(obj1, obj2) {
   const resultOfCompare = compare(obj1, obj2);
   const iter = (item) => item.map((obj) => {
-    if (item.sign !== 'same') {
       const { sign, key, value } = obj;
       if (sign === 'o') {
         return `Property '${key}${stringify(value, key)}`;
@@ -50,9 +49,10 @@ export default function makePlain(obj1, obj2) {
       if (sign === '-') {
         return `Property '${key}' was removed`;
       }
+      if (sign === 'not same') {
       return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'`;
-    }
-    return '';
+      }
+      return '';
   }).filter(Boolean).join('\n');
   return iter(resultOfCompare, '').slice(0, -1);
 }
