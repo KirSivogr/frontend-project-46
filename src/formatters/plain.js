@@ -52,7 +52,7 @@ export default function makePlain(obj1, obj2) {
       }
       return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'`;
     }
-    return '';
+    return;
   }).filter(Boolean).join('\n');
   return iter(resultOfCompare, '').slice(0, -1);
 }
