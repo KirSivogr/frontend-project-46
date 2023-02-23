@@ -1,35 +1,56 @@
-import _ from 'lodash';
-import compare from './compare.js';
+import _ from "lodash";
+import compare from "./compare.js";
 
 const inType = (value) => {
-  if (typeof value === 'string') {
-    return `'${value}'`;
-  } if (_.isObject(value)) {
-    return '[complex value]';
-  } return value;
+    if (typeof value === 'string') {
+        return `'${value}'`;
+    } if (_.isObject(value)) {
+        return '[complex value]';
+    } return value;
 };
 
-const stringify = (ind, key, data) => {
-  switch (ind) {
-    case 'plus': return `Property '${key}' was added with value: ${inType(data)}`;
-    case 'minus': return `Property '${key}' was removed`;
-    case 'not_same': return `Property '${key}' was updated. From ${inType(data[1])} to ${inType(data[2])}`;
-    default:
-  }
-  return 0;
-};
-
-const makePlain = (obj1, obj2) => {
-  const mass = compare(obj1, obj2);
-  const iter = (value, path) => value.filter((n) => n.ind !== 'same').map((item) => {
-    const { ind, key, data } = item;
-    const newPath = _.trim(`${path}.${key}`, '.');
-    if (ind === 'obj') {
-      return `${iter(data, newPath)}`;
+const stringify = (obj, string) => {
+    const iter = (obj1, string1) => {
+        if (!Array.isArray(obj1)) {
+            const {sign, key, value} = obj1;
+            if (sign === '+') {
+                return `.${key}' was added with value: ${inType(value)}`;
+            }
+            else if (sign === '-') {
+                return `.${key}' was removed`;
+            }
+            else if (sign === 'not same') {
+                return `.${key}' was updated. From ${inType(value[0])} to ${inType(value[1])}`;
+            }
+            else if (sign === 'o') {
+                return `.${key}${iter(value, string1 + '.' + key)}`;
+            }
+        }
+        return `${obj1.map((item) => { if (item['sign'] !== 'same') return `${iter(item, string1)}`})
+            .filter(Boolean).
+            join(`\nProperty '${string1}`)}`;
     }
-    return stringify(ind, `${newPath}`, data);
-  }).join('\n');
-  return iter(mass, '');
-};
+    return iter(obj, string);
+}
 
-export default makePlain;
+export default function makePlain (obj1, obj2) {
+    const resultOfCompare = compare(obj1, obj2);
+    const iter = (item) => {
+        return item.map((obj) => {
+            const {sign, key, value} = obj;
+            if (sign === 'o') {
+                return `Property '${key}${stringify(value, key)}`;
+            }
+            if (sign === '+') {
+                return `Property '${key}' was added with value: ${inType(value)}`;
+            }
+            if (sign === '-') {
+                return `Property '${key}' was removed`;
+            }
+            if (sign === 'not same') {
+                return `Property '${key}' was updated. From '${inType(value[0])}' to '${inType(value[1])}'`;
+            }
+        }).join('\n');
+    }
+    return iter(resultOfCompare);
+}
