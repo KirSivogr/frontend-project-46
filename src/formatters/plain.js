@@ -32,4 +32,4 @@ const makePlain = (obj1, obj2) => {
   return iter(mass, '');
 };
 
-export default compInPlain;
+export default makePlain;
