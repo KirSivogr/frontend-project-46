@@ -1,36 +1,35 @@
 import _ from 'lodash';
+import compare from './compare.js';
 
-const stringify = (value) => {
-  if (_.isObject(value)) {
-    return '[complex value]';
-  } if (typeof value === 'string') {
+const inType = (value) => {
+  if (typeof value === 'string') {
     return `'${value}'`;
+  } if (_.isObject(value)) {
+    return '[complex value]';
+  } return value;
+};
+
+const stringify = (ind, key, data) => {
+  switch (ind) {
+    case 'plus': return `Property '${key}' was added with value: ${inType(data)}`;
+    case 'minus': return `Property '${key}' was removed`;
+    case 'not_same': return `Property '${key}' was updated. From ${inType(data[1])} to ${inType(data[2])}`;
+    default:
   }
-  return String(value);
+  return 0;
 };
 
-export default (data) => {
-  const iter = (node, key = '') => {
-    const result = node.flatMap((item) => {
-      const newKeys = [...key, item.key];
-
-      switch (item.type) {
-        case 'object':
-          return iter(item.children, newKeys);
-        case 'added':
-          return `Property '${newKeys.join('.')}' was added with value: ${stringify(item.val)}`;
-        case 'deleted':
-          return `Property '${newKeys.join('.')}' was removed`;
-        case 'unchanged':
-          return null;
-        case 'changed':
-          return `Property '${newKeys.join('.')}' was updated. From ${stringify(item.val1)} to ${stringify(item.val2)}`;
-        default:
-          return `Unknown type ${item.type}`;
-      }
-    });
-
-    return result.filter((item) => item !== null).join('\n');
-  };
-  return iter(data, []);
+const compInPlain = (obj1, obj2) => {
+  const mass = compare(obj1, obj2);
+  const iter = (value, path) => value.filter((n) => n.ind !== 'same').map((item) => {
+    const { ind, key, data } = item;
+    const newPath = _.trim(`${path}.${key}`, '.');
+    if (ind === 'obj') {
+      return `${iter(data, newPath)}`;
+    }
+    return stringify(ind, `${newPath}`, data);
+  }).join('\n');
+  return iter(mass, '');
 };
+
+export default compInPlain;
